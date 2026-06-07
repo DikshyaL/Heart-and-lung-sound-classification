@@ -106,8 +106,4 @@ predict_lung("../dataset/LS/F_PR_LLA.wav")
 - Missing or unreadable WAV files are skipped — check printed "Missing" messages if you expect files to load.
 - Feature extraction uses `librosa.load` which can be sensitive to file encodings and sample rates; convert files to WAV PCM if you encounter errors.
 
-## Next steps (optional)
 
-- Add a `requirements.txt` or `environment.yml` to pin versions.
-- Save the trained model with `joblib` or `pickle` and add a simple CLI script for batch predictions.
-- Replace summary features with frame-level features or spectrogram-based CNNs for higher accuracy.
