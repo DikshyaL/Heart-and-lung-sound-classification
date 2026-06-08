@@ -125,3 +125,9 @@ predict_heart("../dataset/HS/F_N_RC.wav")
 - Some classes are removed if they have fewer than 5 samples, so the final label set may be smaller than the raw CSV label list.
 - Missing or unreadable audio files are skipped during feature extraction.
 - The final model is trained on the full dataset after evaluation, so the helper prediction function uses the most recently fitted model.
+
+## Citation
+
+If you use this dataset or the notebooks in this repository, please cite the dataset descriptor:
+
+Y. Torabi, S. Shirani and J. P. Reilly, "Descriptor: Heart and Lung Sounds Dataset Recorded from a Clinical Manikin using Digital Stethoscope (HLS-CMDS)," in IEEE Data Descriptions, doi: 10.1109/IEEEDATA.2025.3566012.

@@ -1,0 +1,146 @@
+Mix_ID,True_Heart,Pred_Heart,True_Lung,Pred_Lung
+M0001,Late Systolic Murmur,Mid Systolic Murmur,Rhonchi,Wheezing
+M0002,S3,Early Systolic Murmur,Normal,Normal
+M0003,Atrial Fibrillation,Early Systolic Murmur,Normal,Coarse Crackles
+M0004,S3,S3,Coarse Crackles,Pleural Rub
+M0005,AV Block,Normal,Fine Crackles,Pleural Rub
+M0006,S3,Early Systolic Murmur,Pleural Rub,Normal
+M0007,Tachycardia,S3,Pleural Rub,Pleural Rub
+M0008,Early Systolic Murmur,Early Systolic Murmur,Pleural Rub,Normal
+M0009,Mid Systolic Murmur,Late Systolic Murmur,Wheezing,Wheezing
+M0010,Early Systolic Murmur,Late Systolic Murmur,Coarse Crackles,Wheezing
+M0011,S4,Early Systolic Murmur,Normal,Coarse Crackles
+M0012,AV Block,Normal,Rhonchi,Rhonchi
+M0013,Atrial Fibrillation,Late Systolic Murmur,Pleural Rub,Pleural Rub
+M0014,Late Diastolic Murmur,Mid Systolic Murmur,Rhonchi,Rhonchi
+M0015,Late Diastolic Murmur,Normal,Coarse Crackles,Pleural Rub
+M0016,Atrial Fibrillation,Late Systolic Murmur,Rhonchi,Rhonchi
+M0017,S3,Late Systolic Murmur,Coarse Crackles,Coarse Crackles
+M0018,Late Systolic Murmur,Late Systolic Murmur,Wheezing,Wheezing
+M0019,Tachycardia,Early Systolic Murmur,Pleural Rub,Coarse Crackles
+M0020,Late Diastolic Murmur,Late Systolic Murmur,Normal,Normal
+M0021,Late Systolic Murmur,Early Systolic Murmur,Coarse Crackles,Rhonchi
+M0022,AV Block,Late Systolic Murmur,Fine Crackles,Wheezing
+M0023,Tachycardia,Early Systolic Murmur,Normal,Wheezing
+M0024,S4,Early Systolic Murmur,Wheezing,Wheezing
+M0025,Atrial Fibrillation,Normal,Pleural Rub,Coarse Crackles
+M0026,S3,Normal,Pleural Rub,Fine Crackles
+M0027,Late Diastolic Murmur,Late Systolic Murmur,Coarse Crackles,Coarse Crackles
+M0028,AV Block,Early Systolic Murmur,Coarse Crackles,Rhonchi
+M0029,Tachycardia,Late Systolic Murmur,Pleural Rub,Wheezing
+M0030,S4,Late Systolic Murmur,Pleural Rub,Normal
+M0031,Late Systolic Murmur,Late Systolic Murmur,Fine Crackles,Wheezing
+M0032,Tachycardia,Late Systolic Murmur,Pleural Rub,Wheezing
+M0033,Late Systolic Murmur,Late Systolic Murmur,Fine Crackles,Wheezing
+M0034,Early Systolic Murmur,Early Systolic Murmur,Coarse Crackles,Coarse Crackles
+M0035,S4,Late Systolic Murmur,Fine Crackles,Coarse Crackles
+M0036,S3,Early Systolic Murmur,Normal,Normal
+M0037,AV Block,Early Systolic Murmur,Normal,Normal
+M0038,S3,Early Systolic Murmur,Normal,Normal
+M0039,Normal,Early Systolic Murmur,Wheezing,Wheezing
+M0040,Tachycardia,Early Systolic Murmur,Rhonchi,Wheezing
+M0041,Atrial Fibrillation,Late Systolic Murmur,Normal,Rhonchi
+M0042,Mid Systolic Murmur,Late Systolic Murmur,Coarse Crackles,Wheezing
+M0043,Tachycardia,Late Systolic Murmur,Pleural Rub,Wheezing
+M0044,Normal,Late Systolic Murmur,Coarse Crackles,Rhonchi
+M0045,Late Diastolic Murmur,Early Systolic Murmur,Fine Crackles,Rhonchi
+M0046,Atrial Fibrillation,Late Systolic Murmur,Normal,Wheezing
+M0047,Atrial Fibrillation,Early Systolic Murmur,Rhonchi,Rhonchi
+M0048,S4,Mid Systolic Murmur,Wheezing,Wheezing
+M0049,S4,Late Systolic Murmur,Rhonchi,Wheezing
+M0050,Early Systolic Murmur,Late Systolic Murmur,Wheezing,Wheezing
+M0051,Tachycardia,Early Systolic Murmur,Normal,Wheezing
+M0052,Early Systolic Murmur,Late Systolic Murmur,Pleural Rub,Normal
+M0053,Atrial Fibrillation,Late Systolic Murmur,Coarse Crackles,Wheezing
+M0054,Late Diastolic Murmur,Late Systolic Murmur,Wheezing,Wheezing
+M0055,Late Systolic Murmur,Late Systolic Murmur,Fine Crackles,Rhonchi
+M0056,AV Block,Mid Systolic Murmur,Rhonchi,Wheezing
+M0057,Late Diastolic Murmur,Mid Systolic Murmur,Coarse Crackles,Rhonchi
+M0058,S4,Late Systolic Murmur,Rhonchi,Wheezing
+M0059,S3,Normal,Pleural Rub,Pleural Rub
+M0060,Late Diastolic Murmur,Late Systolic Murmur,Wheezing,Wheezing
+M0061,S4,Mid Systolic Murmur,Rhonchi,Rhonchi
+M0062,Tachycardia,Early Systolic Murmur,Coarse Crackles,Coarse Crackles
+M0063,S4,Early Systolic Murmur,Pleural Rub,Normal
+M0064,S4,S3,Pleural Rub,Pleural Rub
+M0065,Atrial Fibrillation,Normal,Pleural Rub,Pleural Rub
+M0066,Normal,Late Systolic Murmur,Normal,Wheezing
+M0067,Atrial Fibrillation,Late Systolic Murmur,Rhonchi,Coarse Crackles
+M0068,S3,Late Systolic Murmur,Fine Crackles,Normal
+M0069,Late Systolic Murmur,Late Systolic Murmur,Coarse Crackles,Wheezing
+M0070,Late Systolic Murmur,Late Systolic Murmur,Normal,Wheezing
+M0071,S3,Late Systolic Murmur,Rhonchi,Wheezing
+M0072,S3,Late Systolic Murmur,Pleural Rub,Coarse Crackles
+M0073,Mid Systolic Murmur,Late Systolic Murmur,Pleural Rub,Wheezing
+M0074,Normal,Early Systolic Murmur,Normal,Normal
+M0075,Early Systolic Murmur,Late Systolic Murmur,Pleural Rub,Wheezing
+M0076,Mid Systolic Murmur,Late Systolic Murmur,Fine Crackles,Wheezing
+M0077,Late Diastolic Murmur,Late Systolic Murmur,Rhonchi,Wheezing
+M0078,Late Systolic Murmur,Late Systolic Murmur,Normal,Wheezing
+M0079,Tachycardia,Early Systolic Murmur,Coarse Crackles,Wheezing
+M0080,Mid Systolic Murmur,Mid Systolic Murmur,Pleural Rub,Wheezing
+M0081,Late Systolic Murmur,Late Systolic Murmur,Wheezing,Wheezing
+M0082,Late Systolic Murmur,Late Systolic Murmur,Fine Crackles,Wheezing
+M0083,AV Block,Late Systolic Murmur,Pleural Rub,Wheezing
+M0084,Early Systolic Murmur,Late Systolic Murmur,Normal,Normal
+M0085,Normal,Early Systolic Murmur,Rhonchi,Normal
+M0086,Mid Systolic Murmur,Late Systolic Murmur,Wheezing,Wheezing
+M0087,Atrial Fibrillation,Early Systolic Murmur,Coarse Crackles,Normal
+M0088,S4,Early Systolic Murmur,Rhonchi,Wheezing
+M0089,Mid Systolic Murmur,Late Systolic Murmur,Wheezing,Wheezing
+M0090,Tachycardia,Mid Systolic Murmur,Rhonchi,Wheezing
+M0091,Atrial Fibrillation,Late Systolic Murmur,Rhonchi,Coarse Crackles
+M0092,S4,Mid Systolic Murmur,Wheezing,Rhonchi
+M0093,AV Block,Late Systolic Murmur,Coarse Crackles,Normal
+M0094,Late Systolic Murmur,Late Systolic Murmur,Rhonchi,Wheezing
+M0095,Mid Systolic Murmur,Late Systolic Murmur,Normal,Wheezing
+M0096,Normal,Late Systolic Murmur,Rhonchi,Wheezing
+M0097,Late Diastolic Murmur,Late Systolic Murmur,Pleural Rub,Coarse Crackles
+M0098,Tachycardia,Late Systolic Murmur,Wheezing,Wheezing
+M0099,AV Block,Late Systolic Murmur,Fine Crackles,Wheezing
+M0100,Late Systolic Murmur,Late Systolic Murmur,Coarse Crackles,Wheezing
+M0101,Late Systolic Murmur,Late Systolic Murmur,Wheezing,Wheezing
+M0102,Atrial Fibrillation,Late Systolic Murmur,Pleural Rub,Coarse Crackles
+M0103,Normal,Late Systolic Murmur,Wheezing,Wheezing
+M0104,Mid Systolic Murmur,Early Systolic Murmur,Fine Crackles,Wheezing
+M0105,Late Systolic Murmur,Late Systolic Murmur,Wheezing,Wheezing
+M0106,Normal,Late Diastolic Murmur,Rhonchi,Rhonchi
+M0107,Normal,Early Systolic Murmur,Pleural Rub,Coarse Crackles
+M0108,Late Systolic Murmur,Late Systolic Murmur,Rhonchi,Wheezing
+M0109,Mid Systolic Murmur,Late Systolic Murmur,Fine Crackles,Wheezing
+M0110,Early Systolic Murmur,Early Systolic Murmur,Normal,Wheezing
+M0111,Normal,Normal,Fine Crackles,Rhonchi
+M0112,Late Systolic Murmur,Early Systolic Murmur,Pleural Rub,Wheezing
+M0113,Mid Systolic Murmur,Early Systolic Murmur,Rhonchi,Rhonchi
+M0114,Atrial Fibrillation,Late Systolic Murmur,Wheezing,Wheezing
+M0115,Atrial Fibrillation,Normal,Fine Crackles,Fine Crackles
+M0116,S4,Early Systolic Murmur,Coarse Crackles,Normal
+M0117,Early Systolic Murmur,Early Systolic Murmur,Rhonchi,Normal
+M0118,Tachycardia,Early Systolic Murmur,Fine Crackles,Wheezing
+M0119,S3,Normal,Wheezing,Rhonchi
+M0120,Early Systolic Murmur,Late Systolic Murmur,Fine Crackles,Coarse Crackles
+M0121,AV Block,Mid Systolic Murmur,Wheezing,Wheezing
+M0122,Normal,Early Systolic Murmur,Normal,Pleural Rub
+M0123,Late Diastolic Murmur,Mid Systolic Murmur,Wheezing,Wheezing
+M0124,AV Block,Late Systolic Murmur,Wheezing,Wheezing
+M0125,Mid Systolic Murmur,Early Systolic Murmur,Normal,Fine Crackles
+M0126,Normal,Normal,Fine Crackles,Rhonchi
+M0127,S3,Mid Systolic Murmur,Wheezing,Wheezing
+M0128,Mid Systolic Murmur,Late Systolic Murmur,Fine Crackles,Wheezing
+M0129,Tachycardia,Early Systolic Murmur,Wheezing,Wheezing
+M0130,Early Systolic Murmur,Early Systolic Murmur,Normal,Coarse Crackles
+M0131,S4,Early Systolic Murmur,Fine Crackles,Fine Crackles
+M0132,S3,Early Systolic Murmur,Wheezing,Wheezing
+M0133,Normal,Normal,Fine Crackles,Fine Crackles
+M0134,AV Block,Normal,Normal,Normal
+M0135,S4,Early Systolic Murmur,Normal,Normal
+M0136,Tachycardia,Late Systolic Murmur,Wheezing,Wheezing
+M0137,Late Diastolic Murmur,Early Systolic Murmur,Fine Crackles,Fine Crackles
+M0138,Tachycardia,Early Systolic Murmur,Normal,Normal
+M0139,S3,Early Systolic Murmur,Wheezing,Fine Crackles
+M0140,Early Systolic Murmur,S3,Normal,Normal
+M0141,S4,Early Systolic Murmur,Wheezing,Rhonchi
+M0142,Mid Systolic Murmur,Late Systolic Murmur,Normal,Normal
+M0143,Early Systolic Murmur,Mid Systolic Murmur,Wheezing,Wheezing
+M0144,AV Block,Early Systolic Murmur,Normal,Normal
+M0145,Late Diastolic Murmur,S3,Normal,Pleural Rub

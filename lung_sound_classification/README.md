@@ -106,4 +106,10 @@ predict_lung("../dataset/LS/F_PR_LLA.wav")
 - Missing or unreadable WAV files are skipped — check printed "Missing" messages if you expect files to load.
 - Feature extraction uses `librosa.load` which can be sensitive to file encodings and sample rates; convert files to WAV PCM if you encounter errors.
 
+## Citation
+
+If you use this dataset or the notebooks in this repository, please cite the dataset descriptor:
+
+Y. Torabi, S. Shirani and J. P. Reilly, "Descriptor: Heart and Lung Sounds Dataset Recorded from a Clinical Manikin using Digital Stethoscope (HLS-CMDS)," in IEEE Data Descriptions, doi: 10.1109/IEEEDATA.2025.3566012.
+
 
