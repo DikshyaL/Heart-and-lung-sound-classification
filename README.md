@@ -1,9 +1,11 @@
-# Heart Sound Project
+# Heart & Lung Sound Classification (HLS-CMDS)
 
 Overview
 --------
 
-This repository contains notebooks and code to build and evaluate machine learning models for heart, lung, and mixed audio recordings from the HLS-CMDS dataset (UCI / clinical manikin recordings). The project demonstrates an end-to-end workflow: load metadata, map recordings, extract compact audio features with `librosa`, train classical ML models (Random Forest), evaluate with stratified splits and cross-validation, and run batch or single-file inference.
+This project builds machine learning models to classify heart and lung sounds using the HLS-CMDS dataset (clinical manikin recordings from UCI). It includes full pipelines for feature extraction, model training, evaluation, and mixed-signal inference.
+
+The system demonstrates a complete audio ML workflow using classical machine learning techniques.
 
 Dataset
 -------
@@ -15,6 +17,31 @@ https://archive.ics.uci.edu/dataset/1202/hls-cmds:+heart+and+lung+sounds+dataset
 Please cite the dataset descriptor when using the data or these notebooks:
 
 Y. Torabi, S. Shirani and J. P. Reilly, "Descriptor: Heart and Lung Sounds Dataset Recorded from a Clinical Manikin using Digital Stethoscope (HLS-CMDS)," in IEEE Data Descriptions, doi: 10.1109/IEEEDATA.2025.3566012.
+
+
+Key features
+-------
+
+- Heart sound classification model (Random Forest)
+- Lung sound classification model (Random Forest)
+- Mixed audio evaluation pipeline (heart + lung prediction)
+- Audio feature extraction using librosa
+- Stratified train-test split + cross-validation
+- Confusion matrix and performance reporting
+- Single-file inference support
+
+Methodology
+-------
+
+Each audio file is processed using librosa and converted into a fixed-length feature vector:
+
+- 20 MFCC features (mean pooled)
+- Zero Crossing Rate
+- Root Mean Square Energy
+- Spectral Centroid
+- Spectral Bandwidth
+
+These features are used to train a Random Forest classifier with class balancing.
 
 Repository structure
 --------------------
