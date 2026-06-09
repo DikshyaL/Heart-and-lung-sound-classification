@@ -8,9 +8,6 @@ The notebook builds a compact, reproducible pipeline that converts WAV recording
 
 ## Data
 
-- Source: UCI HLS-CMDS (Heart and Lung Sounds Dataset)
-- Metadata: `dataset/LS.csv`
-- Audio files: `dataset/LS/` (WAV)
 
 Each `Lung Sound ID` in the CSV corresponds to a WAV file in `dataset/LS/`.
 
@@ -31,15 +28,6 @@ Each `Lung Sound ID` in the CSV corresponds to a WAV file in `dataset/LS/`.
 
 Each recording is summarized into a fixed-length vector composed of the following pooled statistics:
 
-- 20 MFCC means
-- 20 MFCC standard deviations
-- 12 chroma means
-- 7 spectral contrast means
-- zero-crossing rate (mean)
-- RMS energy (mean)
-- spectral centroid (mean)
-- spectral bandwidth (mean)
-- spectral rolloff (mean)
 
 Total feature length: 64 elements. These are simple, fast to compute, and suitable for tree- and kernel-based models.
 
@@ -49,18 +37,11 @@ Rationale: mean/std pooling produces a compact representation invariant to recor
 
 All candidates are trained inside a `Pipeline([('scaler', StandardScaler()), ('model', ...)])`:
 
-- Baseline: `DummyClassifier(strategy='most_frequent')`
-- Random Forest: `RandomForestClassifier(n_estimators=500, class_weight='balanced', random_state=42)`
-- SVM: `SVC(kernel='rbf', C=10, class_weight='balanced')`
-- XGBoost: `XGBClassifier(n_estimators=500, learning_rate=0.05, max_depth=6, subsample=0.8, colsample_bytree=0.8, eval_metric='mlogloss', random_state=42)`
 
 Selection metric: mean macro F1 across 5 stratified folds. The notebook also reports hold-out test metrics and confusion matrices per model.
 
 ## Outputs and Artifacts
 
-- `lung_model.pkl` — the selected model retrained on all available data
-- `label_encoder_lung.pkl` — label encoder used to map between numeric and string labels
-- Printed artifacts in the notebook: classification reports, confusion matrices, CV scores
 
 Saved artifacts are written to the `lung_sound_classification/` folder by default.
 
@@ -86,14 +67,8 @@ le = joblib.load('label_encoder_lung.pkl')
 
 ## Limitations & Next Steps
 
-- Pooling statistics remove temporal structure; for overlapping sources or complex temporal patterns, consider frame-based models or CNNs on mel-spectrograms.
-- No explicit source separation is performed; mixed recordings will likely reduce single-task performance.
-- For production use, add input validation, unit tests for the feature extractor, and deterministic dataset splits saved as manifests.
 
 Suggested improvements:
-- Replace pooled features with short-time frame stacks or mel-spectrogram inputs to a CNN.
-- Add balanced resampling or class-specific augmentation for rare classes.
-- Provide an easy CLI or `predict.py` wrapper for batch inference.
 
 ## Citation
 
