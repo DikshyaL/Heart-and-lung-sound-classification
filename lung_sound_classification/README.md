@@ -1,110 +1,105 @@
 # Lung Sound Classification
 
-This folder contains the lung sound classification workflow implemented in [lung.ipynb](lung.ipynb). The notebook uses the lung subset of HLS-CMDS, compares multiple classical ML models on the same audio representation, and saves the best model for reuse.
+This document describes the `lung.ipynb` workflow and implementation details for lung sound classification using the HLS-CMDS dataset.
 
-## Dataset
+## Summary
 
-The notebook uses the lung subset of the UCI HLS-CMDS collection:
+The notebook builds a compact, reproducible pipeline that converts WAV recordings into a fixed-length feature vector and trains several classical classifiers. It selects the best model by macro F1 using 5-fold stratified cross-validation, retrains it on all data, and saves the model and label encoder for later inference and evaluation.
 
-https://archive.ics.uci.edu/dataset/1202/hls-cmds:+heart+and+lung+sounds+dataset+recorded+from+a+clinical+manikin+using+digital+stethoscope
+## Data
 
-Inputs used by the notebook:
+- Source: UCI HLS-CMDS (Heart and Lung Sounds Dataset)
+- Metadata: `dataset/LS.csv`
+- Audio files: `dataset/LS/` (WAV)
 
-- `dataset/LS.csv` for labels and metadata
-- `dataset/LS/` for the corresponding `.wav` files
+Each `Lung Sound ID` in the CSV corresponds to a WAV file in `dataset/LS/`.
 
-Each `Lung Sound ID` in the CSV maps to one audio file in `dataset/LS/`.
+## End-to-end Workflow
 
-## Workflow
+1. Load `dataset/LS.csv` and inspect class counts.
+2. Filter out classes with fewer than 5 samples (configurable threshold) to reduce noise from extremely small classes.
+3. Construct file paths and verify file existence.
+4. Extract features from each WAV at 22050 Hz using `librosa`.
+5. Encode labels with `LabelEncoder` and persist it to `label_encoder_lung.pkl`.
+6. Split data with `train_test_split(..., stratify=y)` for an 80/20 evaluation.
+7. Train candidate models inside `Pipeline` objects that include `StandardScaler`.
+8. Evaluate models using stratified 5-fold cross-validation (macro F1) and the hold-out test set (accuracy, macro F1, classification report, confusion matrix).
+9. Select the best-performing model from CV, retrain on the full dataset, and save it as `lung_model.pkl`.
+10. Provide `predict_lung(file_path)` for single-file inference using the saved artifact.
 
-The notebook follows an end-to-end pipeline:
+## Feature Representation
 
-1. Load `LS.csv` into a DataFrame and inspect the label distribution.
-2. Remove classes with fewer than 5 samples to reduce imbalance noise.
-3. Build file paths from `Lung Sound ID` values.
-4. Load each recording at 22050 Hz with `librosa`.
-5. Extract a fixed-length feature vector from each file.
-6. Encode labels and persist the encoder as `label_encoder_lung.pkl`.
-7. Split the data with `train_test_split(..., stratify=y)`.
-8. Train and compare several models.
-9. Evaluate each model with accuracy, macro F1, classification report, confusion matrix, and 5-fold stratified cross-validation.
-10. Select the best model by macro F1, retrain on all available data, and save it as `lung_model.pkl`.
-11. Provide a helper for single-file inference through `predict_lung(file_path)`.
-
-## Architecture
-
-The lung notebook uses the same feature and model stack as the heart notebook so the two tasks can be compared fairly.
-
-### Feature extraction layer
-
-Each audio file is converted into a 64-dimensional feature vector:
+Each recording is summarized into a fixed-length vector composed of the following pooled statistics:
 
 - 20 MFCC means
 - 20 MFCC standard deviations
-- 12 chroma features
-- 7 spectral contrast values
-- zero-crossing rate
-- RMS energy
-- spectral centroid
-- spectral bandwidth
-- spectral rolloff
+- 12 chroma means
+- 7 spectral contrast means
+- zero-crossing rate (mean)
+- RMS energy (mean)
+- spectral centroid (mean)
+- spectral bandwidth (mean)
+- spectral rolloff (mean)
 
-The features are pooled across the full recording, which gives a compact tabular representation.
+Total feature length: 64 elements. These are simple, fast to compute, and suitable for tree- and kernel-based models.
 
-### Modeling layer
+Rationale: mean/std pooling produces a compact representation invariant to recording length, which simplifies model training and reduces compute requirements compared with frame-level or spectrogram models.
 
-All models are wrapped in a preprocessing pipeline with `StandardScaler`:
+## Models Compared
 
-- `DummyClassifier(strategy="most_frequent")` as a baseline
-- `RandomForestClassifier(n_estimators=500, class_weight="balanced", random_state=42)`
-- `SVC(kernel="rbf", C=10, class_weight="balanced")`
-- `XGBClassifier(n_estimators=500, learning_rate=0.05, max_depth=6, subsample=0.8, colsample_bytree=0.8, eval_metric="mlogloss", random_state=42)`
+All candidates are trained inside a `Pipeline([('scaler', StandardScaler()), ('model', ...)])`:
 
-The notebook selects the model with the best mean macro F1 score across cross-validation folds.
+- Baseline: `DummyClassifier(strategy='most_frequent')`
+- Random Forest: `RandomForestClassifier(n_estimators=500, class_weight='balanced', random_state=42)`
+- SVM: `SVC(kernel='rbf', C=10, class_weight='balanced')`
+- XGBoost: `XGBClassifier(n_estimators=500, learning_rate=0.05, max_depth=6, subsample=0.8, colsample_bytree=0.8, eval_metric='mlogloss', random_state=42)`
 
-### Validation layer
+Selection metric: mean macro F1 across 5 stratified folds. The notebook also reports hold-out test metrics and confusion matrices per model.
 
-Validation is done with:
+## Outputs and Artifacts
 
-- an 80/20 stratified train/test split
-- 5-fold `StratifiedKFold` cross-validation
+- `lung_model.pkl` — the selected model retrained on all available data
+- `label_encoder_lung.pkl` — label encoder used to map between numeric and string labels
+- Printed artifacts in the notebook: classification reports, confusion matrices, CV scores
 
-## Files
+Saved artifacts are written to the `lung_sound_classification/` folder by default.
 
-- `lung.ipynb` - main training and inference notebook
-- `lung_model.pkl` - saved best model
-- `label_encoder_lung.pkl` - saved label encoder
+## How to run
 
-## Usage
+1. Activate the project virtual environment and install dependencies (see top-level `requirements.txt`):
 
-1. Open [lung.ipynb](lung.ipynb) in Jupyter or VS Code.
-2. Confirm that the notebook can resolve `../dataset/LS.csv` and `../dataset/LS/`.
-3. Run the cells from top to bottom.
-
-The notebook prints filtered class counts, feature matrix shape, evaluation metrics, cross-validation scores, and the selected best model.
-
-For inference, the notebook exposes:
-
-```python
-predict_lung(file_path)
+```bash
+source ../venv/bin/activate
+pip install -r ../requirements.txt
 ```
 
-Example:
+2. Open `lung.ipynb` in Jupyter or VS Code and run cells from top to bottom.
+
+3. To reuse the trained model programmatically:
 
 ```python
-predict_lung("../dataset/LS/F_PR_LLA.wav")
+import joblib
+model = joblib.load('lung_model.pkl')
+le = joblib.load('label_encoder_lung.pkl')
+# extract features with the same extract_features(path) used in the notebook
 ```
 
-## Notes
+## Limitations & Next Steps
 
-- Classes with fewer than 5 samples are removed before training.
-- Missing or unreadable files are skipped during feature extraction.
-- The saved model and label encoder are required if you want to reuse the trained pipeline outside the notebook.
+- Pooling statistics remove temporal structure; for overlapping sources or complex temporal patterns, consider frame-based models or CNNs on mel-spectrograms.
+- No explicit source separation is performed; mixed recordings will likely reduce single-task performance.
+- For production use, add input validation, unit tests for the feature extractor, and deterministic dataset splits saved as manifests.
+
+Suggested improvements:
+- Replace pooled features with short-time frame stacks or mel-spectrogram inputs to a CNN.
+- Add balanced resampling or class-specific augmentation for rare classes.
+- Provide an easy CLI or `predict.py` wrapper for batch inference.
 
 ## Citation
 
-If you use this dataset or this notebook, please cite the HLS-CMDS dataset descriptor:
+When using this dataset or the notebooks, please cite:
 
 Y. Torabi, S. Shirani and J. P. Reilly, "Descriptor: Heart and Lung Sounds Dataset Recorded from a Clinical Manikin using Digital Stethoscope (HLS-CMDS)," in IEEE Data Descriptions, doi: 10.1109/IEEEDATA.2025.3566012.
+
 
 
