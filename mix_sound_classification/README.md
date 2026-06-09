@@ -1,54 +1,95 @@
 # Mix Sound Classification
 
-This notebook evaluates heart and lung classification models on mixed audio recordings (combined heart + lung sounds). It applies the same feature extraction used for the single-task notebooks and runs both the heart and lung models on each mixed recording to measure how well each model performs when recordings contain mixed sources.
+This folder contains the mixed-recording evaluation workflow implemented in [mix.ipynb](mix.ipynb). Unlike the heart and lung notebooks, this notebook does not train new models. It loads the saved heart and lung models, applies them to mixed recordings, and measures how the single-task models behave when the audio contains overlapping sources.
 
-Dataset
--------
+## Dataset
 
-The mixed recordings used for evaluation are part of the UCI HLS-CMDS collection:
+The mixed recordings come from the UCI HLS-CMDS collection:
 
 https://archive.ics.uci.edu/dataset/1202/hls-cmds:+heart+and+lung+sounds+dataset+recorded+from+a+clinical+manikin+using+digital+stethoscope
 
-Please cite the dataset descriptor:
+Inputs used by the notebook:
 
-Y. Torabi, S. Shirani and J. P. Reilly, "Descriptor: Heart and Lung Sounds Dataset Recorded from a Clinical Manikin using Digital Stethoscope (HLS-CMDS)," in IEEE Data Descriptions, doi: 10.1109/IEEEDATA.2025.3566012.
+- `dataset/Mix.csv` for labels and metadata
+- `dataset/Mix/` for the corresponding `.wav` files
+- `heart_sound_classification/heart_model.pkl`
+- `lung_sound_classification/lung_model.pkl`
+- `heart_sound_classification/label_encoder_heart.pkl`
+- `lung_sound_classification/label_encoder_lung.pkl`
 
-Notebook workflow
------------------
+## Workflow
 
-`mix.ipynb` follows these steps:
+The notebook follows an evaluation-only pipeline:
 
-1. Load saved models: `heart_model.pkl` and `lung_model.pkl` (the heart and lung notebooks include examples of saving trained models using `joblib`).
-2. Load `dataset/Mix.csv` and iterate over `Mixed Sound ID` values to locate `dataset/Mix/*.wav` files.
-3. For each mixed `.wav` file, extract the same compact feature vector used in the single-task notebooks (20 MFCC means + zcr + rms + spectral centroid + bandwidth).
-4. Run both the heart and lung models on the same feature vector and record predictions alongside the true labels from `Mix.csv`.
-5. Aggregate results into `mix_evaluation_results.csv` and compute per-task accuracy, classification reports, and confusion matrices.
+1. Load the persisted heart and lung models with `joblib.load`.
+2. Load the corresponding saved label encoders.
+3. Read `Mix.csv` and iterate through each `Mixed Sound ID`.
+4. Build the path to the matching file in `dataset/Mix/`.
+5. Extract the same 64-dimensional feature vector used in the single-task notebooks.
+6. Predict both heart and lung labels from the same feature vector.
+7. Compare the predictions with the true labels in `Mix.csv`.
+8. Save the per-record results to `mix_evaluation_results.csv`.
+9. Report accuracy, classification metrics, and confusion matrices for both tasks.
 
-Files produced
---------------
+## Architecture
 
-- `mix_evaluation_results.csv` — per-file true vs predicted labels for heart and lung tasks
-- Confusion matrix plots — visualized inside the notebook
+The notebook is built as a lightweight inference and analysis layer on top of the trained heart and lung models.
 
-Usage
------
+### Shared feature extractor
 
-1. Ensure `heart_model.pkl` and `lung_model.pkl` exist in their respective folders (or update `mix.ipynb` to point to alternate paths).
-2. Confirm `dataset/Mix.csv` and WAV files are present in `dataset/Mix/`.
-3. Run `mix.ipynb` from top to bottom. The notebook will save `mix_evaluation_results.csv` in the working directory.
+The mixed recordings are converted into the same 64-dimensional summary feature vector used in the other notebooks:
 
-Limitations and notes
----------------------
+- 20 MFCC means
+- 20 MFCC standard deviations
+- 12 chroma features
+- 7 spectral contrast values
+- zero-crossing rate
+- RMS energy
+- spectral centroid
+- spectral bandwidth
+- spectral rolloff
 
-- The approach uses features averaged across the entire recording; mixed signals may require representation methods that preserve temporal or source-separation information for best performance.
-- If heart and lung sounds overlap heavily in frequency/time, classical per-file features may be insufficient — consider source separation or deep models that operate on spectrograms.
+This keeps the evaluation consistent across all three tasks.
 
-Future enhancement: CNNs and spectrogram-based models
-----------------------------------------------------
+### Prediction layer
 
-As a next step, replace the aggregated features with spectrograms or mel-spectrogram images and train convolutional neural networks (CNNs). CNNs can learn spatial patterns in time-frequency representations and may better separate and classify overlapping sources in mixed recordings.
+The notebook uses the already-trained classifiers from the single-task notebooks:
 
-Citation
---------
+- heart model loaded from `heart_model.pkl`
+- lung model loaded from `lung_model.pkl`
+
+Each model receives the same input vector, but the notebook evaluates them against different ground-truth labels from `Mix.csv`.
+
+### Evaluation layer
+
+The notebook computes:
+
+- accuracy
+- classification report
+- confusion matrix
+- macro F1 score, where applicable in the notebook output
+
+## Outputs
+
+- `mix_evaluation_results.csv` - per-file true labels and predictions for the heart and lung tasks
+- confusion matrix plots - rendered inside the notebook
+
+## Usage
+
+1. Run [heart.ipynb](../heart_sound_classification/heart.ipynb) and [lung.ipynb](../lung_sound_classification/lung.ipynb) first so the model and encoder files exist.
+2. Confirm that `dataset/Mix.csv` and the WAV files in `dataset/Mix/` are available.
+3. Open [mix.ipynb](mix.ipynb) and run the cells from top to bottom.
+
+If the saved artifacts are in a different location, update the paths in the notebook before running it.
+
+## Notes
+
+- This notebook is an evaluation harness, not a training notebook.
+- Mixed audio can be harder to classify because the feature representation is still a single global summary of the full recording.
+- If heart and lung sounds overlap strongly, spectrogram-based or source-separation approaches will likely perform better.
+
+## Citation
+
+If you use this dataset or this notebook, please cite the HLS-CMDS dataset descriptor:
 
 Y. Torabi, S. Shirani and J. P. Reilly, "Descriptor: Heart and Lung Sounds Dataset Recorded from a Clinical Manikin using Digital Stethoscope (HLS-CMDS)," in IEEE Data Descriptions, doi: 10.1109/IEEEDATA.2025.3566012.

@@ -1,117 +1,93 @@
 # Heart Sound Classification
 
-This project classifies heart sound recordings using a machine learning pipeline built in the notebook [heart.ipynb](heart.ipynb). The goal is to take a heart sound recording, extract compact audio features, and predict the corresponding heart sound class.
-
-The notebook is a complete end-to-end workflow:
-
-- load label metadata from the dataset CSV
-- match each record to its `.wav` file
-- extract audio features with `librosa`
-- train and evaluate a classification model
-- run inference on a single audio file
+This folder contains the heart sound classification workflow implemented in [heart.ipynb](heart.ipynb). The notebook builds several classical machine learning models on the heart-sound subset of HLS-CMDS, compares them with the same feature representation, and saves the best-performing model for later reuse.
 
 ## Dataset
 
-The data comes from the UCI HLS-CMDS collection:
+The notebook uses the heart subset of the UCI HLS-CMDS collection:
 
 https://archive.ics.uci.edu/dataset/1202/hls-cmds:+heart+and+lung+sounds+dataset+recorded+from+a+clinical+manikin+using+digital+stethoscope
 
-The notebook uses the heart sound portion of the dataset:
+Inputs used by the notebook:
 
 - `dataset/HS.csv` for labels and metadata
 - `dataset/HS/` for the corresponding `.wav` files
 
-Each `Heart Sound ID` in the CSV maps to a matching audio file.
+Each `Heart Sound ID` in the CSV maps to one audio file in `dataset/HS/`.
 
-The dataset also includes lung sound and mixed sound folders, but the notebook focuses on the heart sound subset.
+## Workflow
 
-## What the notebook does
+The notebook follows an end-to-end pipeline:
 
-The workflow in [heart.ipynb](heart.ipynb) is:
+1. Load `HS.csv` into a DataFrame and inspect the class distribution.
+2. Remove classes with fewer than 5 samples to reduce extreme imbalance.
+3. Build absolute file paths from `Heart Sound ID` values.
+4. Load each recording at 22050 Hz with `librosa`.
+5. Extract a fixed-length feature vector from each file.
+6. Encode labels and persist the encoder as `label_encoder_heart.pkl`.
+7. Split the data with `train_test_split(..., stratify=y)`.
+8. Train and compare multiple models.
+9. Evaluate each model with accuracy, macro F1, classification report, confusion matrix, and 5-fold stratified cross-validation.
+10. Select the best model by macro F1, retrain on all available data, and save it as `heart_model.pkl`.
+11. Provide a helper for single-file inference through `predict_heart(file_path)`.
 
-1. Load the metadata from `HS.csv`.
-2. Inspect class distribution and remove classes with too few samples.
-3. Build file paths for each heart sound recording from `Heart Sound ID`.
-4. Load each audio file at a fixed sample rate of 22050 Hz.
-5. Extract audio features from each `.wav` file:
-   - 20 MFCC coefficients
-   - zero crossing rate
-   - RMS energy
-   - spectral centroid
-   - spectral bandwidth
-6. Combine those features into a 24-dimensional feature vector per recording.
-7. Split the data with stratification so class proportions are preserved.
-8. Train a `RandomForestClassifier` inside a preprocessing pipeline with `StandardScaler`.
-9. Evaluate the model with a train/test split, classification report, confusion matrix, and 5-fold stratified cross-validation.
-10. Retrain on the full dataset and provide a helper function for single-file prediction.
+## Architecture
 
-## Model Summary
+The notebook uses a compact audio-feature pipeline followed by classical classifiers.
 
-- Feature extraction: `librosa`
-- Classifier: `RandomForestClassifier`
-- Trees: `300`
-- Class balance: `balanced`
-- Validation: stratified train/test split plus 5-fold cross-validation
-- Input feature size: 24 values per sample
+### Feature extraction layer
 
-## Method Details
+Each recording is converted into a 64-dimensional feature vector:
 
-The feature vector is built from both time-domain and frequency-domain summaries.
+- 20 MFCC means
+- 20 MFCC standard deviations
+- 12 chroma features
+- 7 spectral contrast values
+- zero-crossing rate
+- RMS energy
+- spectral centroid
+- spectral bandwidth
+- spectral rolloff
 
-- MFCCs capture the shape of the audio spectrum over time.
-- Zero crossing rate helps describe waveform noisiness and signal changes.
-- RMS energy provides a measure of signal strength.
-- Spectral centroid and spectral bandwidth summarize where the energy is concentrated in the spectrum.
+These statistics are pooled over the full clip, which keeps the representation fixed-length and suitable for tabular models.
 
-These features are averaged across the full audio clip, which keeps the model simple and makes it suitable for tabular machine learning methods such as random forests.
+### Modeling layer
 
-## Repository Structure
+The notebook compares three models, all wrapped in a preprocessing pipeline with `StandardScaler`:
 
-- `heart_sound_classification/heart.ipynb` - main notebook
-- `dataset/HS.csv` - label and metadata file
-- `dataset/HS/` - heart sound recordings
-- `dataset/LS/` - lung sound recordings
-- `dataset/Mix/` - mixed audio recordings
+- `DummyClassifier(strategy="most_frequent")` as a baseline
+- `RandomForestClassifier(n_estimators=500, class_weight="balanced", random_state=42)`
+- `SVC(kernel="rbf", C=10, class_weight="balanced")`
+- `XGBClassifier(n_estimators=500, learning_rate=0.05, max_depth=6, subsample=0.8, colsample_bytree=0.8, eval_metric="mlogloss", random_state=42)`
 
-## Environment Setup
+The final model is whichever achieves the best mean macro F1 score during cross-validation.
 
-The notebook expects a Python environment with the dependencies used in the import cells.
+### Validation layer
 
-Recommended packages:
+Validation uses two levels of checking:
 
-- `pandas`
-- `numpy`
-- `librosa`
-- `matplotlib`
-- `scikit-learn`
+- an 80/20 stratified train/test split for quick evaluation
+- 5-fold `StratifiedKFold` cross-validation for a more stable model comparison
 
-If you are setting this up from scratch, install the packages in your environment before opening the notebook.
+## Files
 
-## Requirements
-
-The notebook uses Python packages including:
-
-- `pandas`
-- `numpy`
-- `librosa`
-- `matplotlib`
-- `scikit-learn`
+- `heart.ipynb` - main training and inference notebook
+- `heart_model.pkl` - saved best model
+- `label_encoder_heart.pkl` - saved label encoder
 
 ## Usage
 
 1. Open [heart.ipynb](heart.ipynb) in Jupyter or VS Code.
-2. Make sure the workspace paths still point to `../dataset` from the notebook location.
+2. Confirm that the notebook can resolve `../dataset/HS.csv` and `../dataset/HS/`.
 3. Run the cells from top to bottom.
 
-The notebook will print the class distribution, the number of valid samples loaded, the feature matrix shape, evaluation metrics, and cross-validation scores.
+The notebook prints the filtered class distribution, feature matrix shape, evaluation metrics, cross-validation scores, and the selected best model.
 
-For a single prediction, the notebook defines:
+For inference, the notebook exposes:
 
 ```python
 predict_heart(file_path)
 ```
-
-which loads an audio file, extracts features, and returns the predicted heart sound class.
 
 Example:
 
@@ -121,13 +97,12 @@ predict_heart("../dataset/HS/F_N_RC.wav")
 
 ## Notes
 
-- The notebook expects relative paths to the dataset folder shown above.
-- Some classes are removed if they have fewer than 5 samples, so the final label set may be smaller than the raw CSV label list.
-- Missing or unreadable audio files are skipped during feature extraction.
-- The final model is trained on the full dataset after evaluation, so the helper prediction function uses the most recently fitted model.
+- Classes with fewer than 5 samples are removed before training.
+- Missing or unreadable files are skipped during feature extraction.
+- The saved model and label encoder are required if you want to reuse the trained pipeline outside the notebook.
 
 ## Citation
 
-If you use this dataset or the notebooks in this repository, please cite the dataset descriptor:
+If you use this dataset or this notebook, please cite the HLS-CMDS dataset descriptor:
 
 Y. Torabi, S. Shirani and J. P. Reilly, "Descriptor: Heart and Lung Sounds Dataset Recorded from a Clinical Manikin using Digital Stethoscope (HLS-CMDS)," in IEEE Data Descriptions, doi: 10.1109/IEEEDATA.2025.3566012.
