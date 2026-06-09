@@ -1,126 +1,235 @@
-# Heart & Lung Sound Classification (HLS-CMDS)
+# Heart & Lung Sound Classification Using Machine Learning (HLS-CMDS)
 
-This repository contains three notebooks that share a common audio feature pipeline:
+A machine learning framework for heart sound classification, lung sound classification, and mixed auscultation recording evaluation using the HLS-CMDS dataset.
 
-- [heart_sound_classification/heart.ipynb](heart_sound_classification/heart.ipynb) trains and evaluates heart sound classifiers.
-- [lung_sound_classification/lung.ipynb](lung_sound_classification/lung.ipynb) trains and evaluates lung sound classifiers.
-- [mix_sound_classification/mix.ipynb](mix_sound_classification/mix.ipynb) loads the saved models and evaluates them on mixed recordings.
+## Overview
 
-Together, they form a complete audio machine learning workflow: dataset loading, feature extraction, model comparison, validation, artifact saving, and mixed-signal inference.
+Auscultation remains one of the most widely used non-invasive diagnostic techniques for identifying cardiovascular and respiratory disorders. Automated analysis of heart and lung sounds has the potential to assist healthcare professionals by providing objective and scalable diagnostic support.
+
+This project investigates the classification of heart sounds, lung sounds, and mixed auscultation recordings using traditional machine learning techniques. Separate classifiers are trained on isolated heart and lung recordings and subsequently evaluated on mixed recordings to study their robustness under realistic clinical conditions.
+
+## Research Objectives
+
+* Develop machine learning models for heart sound classification.
+* Develop machine learning models for lung sound classification.
+* Compare the performance of Random Forest, Support Vector Machine (SVM), and XGBoost classifiers.
+* Evaluate model robustness on mixed heart-lung recordings.
+* Analyze performance degradation and class confusion in mixed audio environments.
 
 ## Dataset
 
-All notebooks use the UCI HLS-CMDS collection:
+This project uses the HLS-CMDS (Heart and Lung Sounds Dataset) dataset recorded from a clinical manikin using a digital stethoscope.
+
+Dataset source:
 
 https://archive.ics.uci.edu/dataset/1202/hls-cmds:+heart+and+lung+sounds+dataset+recorded+from+a+clinical+manikin+using+digital+stethoscope
 
-Dataset inputs in this repository:
+### Dataset Structure
 
-- `dataset/HS.csv` and `dataset/HS/` for heart sounds
-- `dataset/LS.csv` and `dataset/LS/` for lung sounds
-- `dataset/Mix.csv` and `dataset/Mix/` for mixed recordings
+```text
+dataset/
+├── HS.csv
+├── LS.csv
+├── Mix.csv
+├── HS/
+│   └── *.wav
+├── LS/
+│   └── *.wav
+└── Mix/
+    └── *.wav
+```
 
-## Project Architecture
+Components:
 
-The project uses a shared classical ML architecture for the heart and lung tasks, then reuses the saved models for mixed-recording evaluation.
+* HS.csv and HS/ contain heart sound metadata and recordings.
+* LS.csv and LS/ contain lung sound metadata and recordings.
+* Mix.csv and Mix/ contain mixed heart-lung recordings.
 
-### Shared feature extraction
+Each metadata record references a corresponding WAV audio file.
 
-Each audio file is loaded at 22050 Hz and converted into a 64-dimensional summary vector:
+## Repository Structure
 
-- 20 MFCC means
-- 20 MFCC standard deviations
-- 12 chroma features
-- 7 spectral contrast values
-- zero-crossing rate
-- RMS energy
-- spectral centroid
-- spectral bandwidth
-- spectral rolloff
+```text
+.
+├── heart_sound_classification/
+│   └── heart.ipynb
+│
+├── lung_sound_classification/
+│   └── lung.ipynb
+│
+├── mix_sound_classification/
+│   └── mix.ipynb
+│
+├── dataset/
+│
+└── requirements.txt
+```
 
-This representation is compact, fixed length, and compatible with tabular machine learning models.
+## Methodology
 
-### Heart and lung model stack
+### Feature Extraction
 
-The heart and lung notebooks both compare the same family of models:
+Each audio recording is loaded at 22,050 Hz and converted into a fixed-length feature vector using Librosa.
 
-- `DummyClassifier(strategy="most_frequent")` as a baseline
-- `RandomForestClassifier(n_estimators=500, class_weight="balanced", random_state=42)`
-- `SVC(kernel="rbf", C=10, class_weight="balanced")`
-- `XGBClassifier(n_estimators=500, learning_rate=0.05, max_depth=6, subsample=0.8, colsample_bytree=0.8, eval_metric="mlogloss", random_state=42)`
+Extracted features:
 
-Each model is wrapped in a `Pipeline` with `StandardScaler` before training. The best model is selected by mean macro F1 score from 5-fold stratified cross-validation, retrained on all available samples, and saved with `joblib`.
+* MFCC means (20)
+* MFCC standard deviations (20)
+* Chroma features (12)
+* Spectral contrast (7)
+* Zero Crossing Rate (ZCR)
+* RMS Energy
+* Spectral Centroid
+* Spectral Bandwidth
+* Spectral Rolloff
 
-### Mixed-recording evaluation layer
+These features form a compact representation suitable for traditional machine learning algorithms.
 
-The mix notebook does not train a new model. Instead, it:
+### Machine Learning Models
 
-- loads `heart_model.pkl` and `lung_model.pkl`
-- loads the corresponding label encoders
-- extracts the same shared features from mixed audio files
-- predicts heart and lung labels from the same input vector
-- compares predictions to the labels in `Mix.csv`
+The following classifiers are evaluated:
 
-## Notebook Workflows
+* Dummy Classifier (Baseline)
+* Random Forest
+* Support Vector Machine (SVM)
+* XGBoost
 
-### Heart notebook
+All models are trained using:
 
-- Loads `HS.csv`, filters classes with fewer than 5 samples, and maps `Heart Sound ID` values to `dataset/HS/*.wav`.
-- Builds the feature matrix and encodes labels.
-- Trains and compares the baseline, Random Forest, SVM, and XGBoost pipelines.
-- Reports accuracy, macro F1, classification reports, confusion matrices, and 5-fold cross-validation scores.
-- Saves `heart_model.pkl` and `label_encoder_heart.pkl`.
+* StandardScaler preprocessing
+* Stratified train-test split
+* 5-fold Stratified Cross Validation
+* Macro F1-based model comparison
 
-### Lung notebook
+### Evaluation Metrics
 
-- Loads `LS.csv`, filters classes with fewer than 5 samples, and maps `Lung Sound ID` values to `dataset/LS/*.wav`.
-- Reuses the same feature extraction and model comparison pipeline as the heart notebook.
-- Reports the same evaluation metrics and saves `lung_model.pkl` plus `label_encoder_lung.pkl`.
+Performance is evaluated using:
 
-### Mix notebook
+* Accuracy
+* Macro F1 Score
+* Classification Report
+* Confusion Matrix
+* Stratified K-Fold Cross Validation
 
-- Loads the saved heart and lung models plus their encoders.
-- Iterates through `Mix.csv` and predicts both tasks for every mixed recording.
-- Saves a per-file evaluation table to `mix_evaluation_results.csv`.
-- Produces classification reports and confusion matrices for both tasks.
+## Experimental Workflow
 
-## Requirements and Setup
+### Heart Sound Classification
 
-Create and activate a virtual environment, then install the project dependencies:
+The heart classification notebook:
+
+* Loads heart sound recordings.
+* Extracts acoustic features.
+* Trains and evaluates multiple classifiers.
+* Selects the best-performing model.
+* Saves the trained model and label encoder.
+
+Outputs:
+
+```text
+heart_model.pkl
+label_encoder_heart.pkl
+```
+
+### Lung Sound Classification
+
+The lung classification notebook:
+
+* Loads lung sound recordings.
+* Uses the same feature extraction pipeline.
+* Trains and evaluates identical model architectures.
+* Saves the best-performing model.
+
+Outputs:
+
+```text
+lung_model.pkl
+label_encoder_lung.pkl
+```
+
+### Mixed Recording Evaluation
+
+The mixed recording notebook:
+
+* Loads the trained heart and lung models.
+* Extracts features from mixed recordings.
+* Predicts heart and lung labels independently from the same audio signal.
+* Evaluates classifier robustness under mixed-source conditions.
+
+Outputs:
+
+```text
+mix_evaluation_results.csv
+```
+
+## Running the Project
+
+### 1. Create a Virtual Environment
 
 ```bash
 python -m venv venv
 source venv/bin/activate
+```
+
+### 2. Install Dependencies
+
+```bash
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## How to Run
+### 3. Execute Notebooks
 
-1. Run the heart notebook first so `heart_model.pkl` and `label_encoder_heart.pkl` are available.
-2. Run the lung notebook so `lung_model.pkl` and `label_encoder_lung.pkl` are available.
-3. Run the mix notebook to evaluate both saved models on mixed recordings.
-4. Open each notebook in Jupyter or VS Code and execute cells sequentially.
+Run the notebooks in the following order:
 
-The notebooks print filtered class distributions, sample counts, feature shapes, evaluation metrics, and cross-validation results.
+1. heart_sound_classification/heart.ipynb
+2. lung_sound_classification/lung.ipynb
+3. mix_sound_classification/mix.ipynb
 
-## Outputs
+## Expected Outputs
 
-- `heart_sound_classification/heart_model.pkl`
-- `heart_sound_classification/label_encoder_heart.pkl`
-- `lung_sound_classification/lung_model.pkl`
-- `lung_sound_classification/label_encoder_lung.pkl`
-- `mix_sound_classification/mix_evaluation_results.csv`
+```text
+heart_sound_classification/
+├── heart_model.pkl
+└── label_encoder_heart.pkl
 
-## Limitations and Future Work
+lung_sound_classification/
+├── lung_model.pkl
+└── label_encoder_lung.pkl
 
-- The current feature set is a single global summary for each recording, so temporal structure is discarded.
-- Class imbalance is reduced by filtering very small classes and using `class_weight="balanced"` in the tree and SVM models.
-- Mixed recordings are harder to classify because the heart and lung sources overlap in the same signal.
-- A future upgrade could replace aggregated features with spectrograms or mel-spectrograms and train CNNs for better source-aware classification.
+mix_sound_classification/
+└── mix_evaluation_results.csv
+```
+
+## Key Research Contribution
+
+Unlike conventional heart-only or lung-only classification studies, this project investigates how classifiers trained on isolated biomedical signals perform when exposed to mixed auscultation recordings.
+
+The resulting analysis provides insight into:
+
+* Model robustness under signal interference.
+* Performance degradation in mixed environments.
+* Practical challenges of real-world automated auscultation systems.
+
+## Limitations
+
+* Global statistical features do not preserve temporal information.
+* Mixed recordings contain overlapping physiological signals that increase classification difficulty.
+* Traditional machine learning models may struggle to separate concurrent sound sources.
+
+## Future Work
+
+Potential extensions include:
+
+* Convolutional Neural Networks (CNNs)
+* Mel-spectrogram-based classification
+* Audio source separation techniques
+* Real-time auscultation analysis
+* Multi-task learning for simultaneous heart and lung diagnosis
+* Transformer-based biomedical audio models
 
 ## Citation
 
-If you use this dataset or the notebooks in this repository, please cite the HLS-CMDS dataset descriptor:
+If you use this dataset, please cite:
+
 
 Y. Torabi, S. Shirani and J. P. Reilly, "Descriptor: Heart and Lung Sounds Dataset Recorded from a Clinical Manikin using Digital Stethoscope (HLS-CMDS)," in IEEE Data Descriptions, doi: 10.1109/IEEEDATA.2025.3566012.
